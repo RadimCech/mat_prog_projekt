@@ -1,0 +1,599 @@
+\documentclass[12pt]{article}
+
+%%%%%%%%%%%%%%%%%%%%%%%% Balíky %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[czech]{babel} 
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs} % Pre profesionálne vyzerajúce tabuľky
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=red]{hyperref}
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\usepackage{lmodern} 
+%\usepackage{newtxtext,newtxmath}
+%\usepackage{microtype}
+\usepackage{pgfplots}
+\usepackage{float}
+
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta}
+
+%%%%%%%%%%%%%%%%%%%%%%% Obsah %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tocloft}
+\renewcommand{\cftsecdotsep}{\cftdotsep}
+\renewcommand{\cfttoctitlefont}{\Large\bfseries}
+\renewcommand{\cftaftertoctitle}{\vspace{0.5cm}}
+\setlength{\cftsecindent}{0pt}      % Sekcia bez odsadenia
+\setlength{\cftsubsecindent}{1.5em} % Podsekcia odsadená
+\setlength{\cftsubsubsecindent}{3em} % Podpodsekcia odsadená viac
+\renewcommand{\cftsecpagefont}{\normalfont}
+\renewcommand{\cftsubsecpagefont}{\normalfont}
+
+%%%%%%%%%%%%%%%%%%%%% Okraje a Odsadeni %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\geometry{
+    a4paper,
+    total={170mm,257mm},
+    left=2.5cm,
+    right=2.5cm,
+    top=5cm,      % Toto spraví ten veľký odskok zhora ako v PDF
+    bottom=5cm    % Spodný okraj pre číslovanie
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2cm} % Odsadenie zhora, aby bol hlavný názov približne v strede hornej polovice
+
+    % Hlavný názov
+    {\huge Projekt – numerické metódy v $\mathbb{R}$ a $\mathbb{R}^n$ \par}
+    
+    \vspace{0.8cm} % Medzera medzi názvom a predmetom
+    
+    % Názov predmetu - stredne veľké písmo
+    {\Large Matematické programovanie (M5170) \par}
+    
+    \vspace{0.8cm} % Väčšia medzera pred menami autorov
+    
+    % Mená autorov 
+    {\large Ján Húska, Radim Čech \par}
+    
+    \vfill % Vyplnenie miesta, aby sa číslo strany dostalo na spodok
+
+    % Číslo strany na titulnom liste 
+    \vfill % Toto vytlačí zvyšok textu úplne na spodok strany
+    
+    % Dátum a číslo strany
+    {\large december 2026 \par}
+    \vspace{0.5cm}
+    {\large 1 \par}
+\end{titlepage}
+
+
+\pagenumbering{arabic}
+\setcounter{page}{2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Obsah 
+\tableofcontents
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Analýza numerických metód pre funkciu jednej premennej}
+
+Na analýzu správania numerických metód pre funkciu jednej premennej sme si zvolili funkciu
+$$ f(x) = (x-2)^2 + \frac{1}{2}\sin(3x) - \frac{1}{3}\cos(2x) + 1, $$
+ktorá je spojitá na celom $\mathbb{R}$. Svoje „presné“ minimum táto funkcia nadobúda v bode
+$$ x^* \doteq 1{,}7876 $$
+s funkčnou hodnotou
+$$ f(x^*) \doteq 0{,}9959. $$
+Na nasledujúcej strane je vykreslený graf tejto funkcie pre obmedzený rozsah hodnôt $x$ a $y$.
+
+Pre tento projekt sme vybrali \textbf{metódu polenia intervalu} a \textbf{metódu zlatého rezu}, ktorých správanie budeme na tejto funkcii skúmať.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --- 4. STRANA: GRAF FUNKCIE 
+\thispagestyle{plain}
+\vspace*{\fill} 
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=16cm, height=12cm,    % ZVÄČŠENIE GRAFU na maximum strany
+            axis lines=middle,
+            xlabel={$x$}, ylabel={$f(x)$},
+            xlabel style={at={(ticklabel* cs:1)}, anchor=north west},
+            ylabel style={at={(ticklabel* cs:1)}, anchor=south west},
+            xmin=-2.5, xmax=6.5,
+            ymin=-2, ymax=18,
+            grid=major,
+            grid style={dotted, gray!50},
+            domain=-2.2:6.2,
+            samples=200,
+            trig format plots=rad,
+            legend style={at={(0.95,0.95)}, anchor=north east, draw=none, fill=none},
+            tick label style={font=\footnotesize}
+        ]
+            
+            % 1. Funkcia
+            \addplot[color=blue!80!black, thick] 
+            { (x-2)^2 + 0.5*sin(3*x) - (1/3)*cos(2*x) + 1 };
+            \addlegendentry{$f(x)$}
+
+            % 2. Minimum (bodka)
+            \addplot[mark=*, color=red, mark size=2.5pt, only marks] 
+            coordinates {(1.7876, 0.9959)};
+
+            % 3. Vodiace čiary
+            \draw[dashed, gray] (axis cs:1.7876, 0) -- (axis cs:1.7876, 0.9959);
+            \draw[dashed, gray] (axis cs:0, 0.9959) -- (axis cs:1.7876, 0.9959);
+
+            % 4. Popis minima 
+            \node[
+                anchor=west,           % Zarovnanie textu
+                fill=white,            % Biele pozadie (aby bol text čitateľný)
+                font=\footnotesize,
+                inner sep=2pt,         % Odsadenie textu od okraja
+                draw=gray!30,          % Jemný rámček (voliteľné)
+                rounded corners        % Zaoblené rohy rámčeka
+            ] (popis) at (axis cs:2.5, 4) {Minimum $[1{,}79; 0{,}99]$};
+
+            % Šípka od popisu k bodu (aby bolo jasné, kam patrí)
+            \draw[->, gray, thick, shorten >=2pt] (popis.south west) -- (axis cs:1.85, 1.1);
+
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Graf funkcie $ f(x) = (x-2)^2 + \frac{1}{2}\sin(3x) - \frac{1}{3}\cos(2x) + 1. $}
+\end{figure}
+
+\vspace*{\fill}
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Metóda polenia intervalu}
+
+\subsubsection{Analýza správania metódy pri rôznych hodnotách počtu vyčíslení}
+
+Ako prvé sa pozrieme na to, ako rôzny zvolený počet vyčíslení ovplyvní presnosť tejto metódy. Konkrétne budeme voliť $N \in \{4, 10, 20, 50, 100\}$, metóda totiž vyžaduje párny počet vyčíslení.
+
+Pre dané vyčíslenia tiež zvolíme pevne rovnaký počiatočný interval. Keďže vopred vieme, že naša funkcia nadobúda v bode $x^* \doteq 1{,}7876$ svoje minimum, zvolíme tak interval, ktorý je približne symetrický okolo daného bodu. My teda volíme počiatočný interval $I_0$ ako $[-2; 6]$.
+
+Pre túto metódu je nutné tiež zvoliť hodnotu $\delta \in (0, \frac{1}{2}(b-a))$. Z teórie vieme, že je vhodné voliť hodnotu delta „dostatočne malú“. V našom prípade teda volíme $\delta = 0{,}01$. Teraz už prejdeme k samotnej analýze správania metódy polenia intervalu a porovnáme výsledky získané pre rôzny počet vyčíslení.
+
+\vspace{0.5cm}
+
+\noindent \textbf{N=4} \\
+Pre $N=4$ vyčíslení dostávame výsledný ILM (interval lokalizácie minima) približne ako $I_2 = [0{,}01; 2{,}01]$ a apriórny odhad maximálnej chyby je $\epsilon_{max} \doteq 1{,}0$. Aproximáciu minima dostávame ako stred tohto intervalu $\tilde{x} \doteq 1{,}01$ s funkčnou hodnotou $f(\tilde{x}) \doteq 1{,}623$. Skutočná chyba je potom $\epsilon \doteq 0{,}777$. Vidíme, že po iba dvoch krokoch metódy je chyba stále značná, čo je vzhľadom na šírku pôvodného intervalu očakávateľné.
+
+\vspace{0.3cm}
+
+\noindent \textbf{N=10} \\
+Pre $N=10$ vyčíslení (5 krokov) sa interval výrazne zúži. Dostávame výsledný ILM približne ako $I_5 = [1{,}51; 2{,}01]$ a apriórny odhad maximálnej chyby je $\epsilon_{max} \doteq 0{,}25$. Aproximáciu minima dostávame ako bod $\tilde{x} \doteq 1{,}76$ s funkčnou hodnotou $f(\tilde{x}) \doteq 0{,}9965$. Skutočná chyba je potom $\epsilon \doteq 0{,}027$. Chyba sa rádovo zmenšila a aproximácia sa už blíži k skutočnému minimu.
+
+\vspace{0.3cm}
+
+\noindent \textbf{N=20} \\
+Pre $N=20$ vyčíslení dostávame výsledný ILM ako $I_{10} = [1{,}78; 1{,}79]$ a apriórny odhad maximálnej chyby klesá pod $0{,}01$. Aproximáciu minima dostávame ako bod $\tilde{x} \doteq 1{,}785$ s funkčnou hodnotou $f(\tilde{x}) \doteq 0{,}9959$. Skutočná chyba je už veľmi malá, rádovo $10^{-3}$. Zdvojnásobením počtu vyčíslení sme dosiahli výrazné spresnenie.
+
+\vspace{0.3cm}
+
+\noindent \textbf{N=50} \\
+Pre $N=50$ vyčíslení je interval lokalizácie minima extrémne úzky. Apriórny odhad chyby je už v rádoch $10^{-6}$. Aproximácia $\tilde{x}$ je prakticky totožná s $x^*$ na 6 desatinných miest. Tu sa už dostávame na veľmi dobrú presnosť, a to najmä pre funkčnú hodnotu. Je však otázkou, či je na praktické účely takto vysoký počet iterácií nutný, keď už pri $N=20$ bola chyba zanedbateľná.
+
+\vspace{0.3cm}
+
+\noindent \textbf{N=100} \\
+Pre $N=100$ vyčíslení sa chyba prakticky nevylepšila oproti predchádzajúcim vyčísleniam, narážame tu už skôr na limity presnosti zvoleného $\delta$ a numerického zobrazenia. Chyby sa líšia až na vysokom mieste za desatinnou čiarkou. Pri našej ďalšej analýze sa tak obmedzíme len na nižšie $N$, ktoré dostatočne ilustrujú správanie metódy. \\
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Analýza správania metódy pri rôznych východiskových intervaloch lokalizácie minima}
+
+Najskôr sa zameriame na rozdielne dĺžky počiatočných intervalov. Konkrétne náš pôvodný interval $I_0 = [-2; 6]$ najprve skrátime na polovicu a potom dvakrát predĺžime. Apriórny odhad maximálnej chyby totiž závisí od konkrétnej dĺžky intervalu.
+
+Konkrétne, zo vzťahu pre dĺžku výsledného intervalu po $k = N/2$ krokoch
+$$ l_k = \frac{b-a}{2^k} + \delta \frac{2^k - 1}{2^{k-1}} $$
+dostávame, že skrátenie intervalu by malo viesť k lepšej presnosti, zatiaľ čo jeho predĺženie k horšej. Overme to na konkrétnych dátach.
+
+\vspace{0.5cm}
+\noindent \textbf{Kratší počiatočný interval} \\
+Pre východiskový interval $I_0 = [0; 4]$ (dĺžka 4) a $N=10$ vyčíslení dostávame výsledný ILM približne ako $I_5 = [1{,}75; 1{,}87]$. Apriórny odhad maximálnej chyby je $\epsilon_{max} \doteq 0{,}06$. Aproximáciu minima dostávame ako bod $\tilde{x} \doteq 1{,}81$ s funkčnou hodnotou $f(\tilde{x}) \doteq 0{,}997$. Skutočná chyba je v tomto prípade výrazne menšia než pri pôvodnom dlhšom intervale $[-2; 6]$ pri rovnakom počte vyčíslení.
+
+Záverom teda môžeme konštatovať, že kratší interval je nezanedbateľne výhodný predovšetkým pre nižší počet vyčíslení.
+
+\vspace{0.5cm}
+\noindent \textbf{Dlhší počiatočný interval} \\
+Pre východiskový interval $I_0 = [-6; 10]$ (dĺžka 16) a $N=10$ vyčíslení je apriórny odhad chyby prirodzene väčší. Výsledný ILM vychádza širší a aproximácia minima $\tilde{x}$ je menej presná. Konkrétne pre $N=10$ je chyba stále v ráde desatín. To potvrdzuje teoretický predpoklad, že ak o polohe minima nič nevieme a musíme zvoliť široký interval „pre istotu“, zaplatíme za to nižšou presnosťou alebo nutnosťou vyššieho počtu iterácií.
+
+\vspace{0.5cm}
+\noindent \textbf{Nesymetrický východiskový interval} \\
+Na záver ešte preskúmajme interval, ktorého jeden z krajných bodov nie je od skutočného bodu minima príliš ďaleko, napr. $I_0 = [-10; 2]$. V úvode sme spomínali, že takýto interval sa bude pri metóde prevažne skracovať z jednej strany.
+
+Ak v našom základnom uvažovanom intervale trafíme jeho krajom príliš blízko k bodu $x^*$, potom v ďalšom kroku môže byť stred intervalu výrazne vzdialený od bodu $x^*$. Pre malý počet vyčíslení to teda môže robiť problém. V našom prípade sa však ukazuje, že metóda je robustná a aj napriek počiatočnému „tápaniu“ sa po niekoľkých iteráciách interval začne sťahovať okolo skutočného minima.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --- METÓDA ZLATÉHO REZU ---
+\newpage
+\subsection{Metóda zlatého rezu}
+
+Podobne ako pri metóde polenia intervalu sa najskôr pozrieme na to, ako rôzny zvolený počet vyčíslení ovplyvní presnosť tejto metódy. Konkrétne budeme opäť voliť $N \in \{4, 10, 20, 50, 100\}$. Rovnako tiež zvolíme počiatočný interval $I_0$ ako $[-2; 6]$. Pre túto metódu už nevolíme hodnotu $\delta$.
+
+Princíp tejto metódy vychádza práve z metódy polenia intervalu, avšak vhodnou voľbou bodov budeme okrem prvého kroku vyčísľovať vždy iba jeden nový bod. Teda v prípade rovnakého počtu vyčíslení $N$ by sme mali dostať $N-1$ nových intervalov, zatiaľ čo pri MPI dostaneme iba $N/2$.
+
+\subsubsection{Analýza správania metódy pri rôznych hodnotách počtu vyčíslení}
+
+\vspace{0.3cm}
+\noindent \textbf{N=4} \\
+Pre $N=4$ vyčíslení dostávame pri metóde zlatého rezu (MZR) o jeden interval viac oproti MPI (konkrétne 3 oproti 2). Pri takto malých hodnotách vyčíslení každý nový krok prináša zlepšenie.
+
+% TABUĽKA PRE N=4
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{N=4} & \textbf{MZR} & \textbf{MPI} \\
+        \midrule
+        Aproximácia $\tilde{x}$ & $1{,}054$ & $1{,}010$ \\
+        Chyba $|\tilde{x}-x^*|$ & $0{,}733$ & $0{,}777$ \\
+        Hodnota $f(\tilde{x})$ & $1{,}538$ & $1{,}623$ \\
+        Posledný ILM & $[0{,}14; 2{,}94]$ & $[0{,}01; 2{,}01]$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Porovnanie pre $N=4$.}
+\end{table}
+
+\noindent \textbf{N=10} \\
+Tu už dostávame 9 intervalov oproti 5 z metódy polenia intervalu. To sa prejaví na presnosti. Očakávame, že chyba MZR bude menšia.
+
+% TABUĽKA PRE N=10
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{N=10} & \textbf{MZR} & \textbf{MPI} \\
+        \midrule
+        Aproximácia $\tilde{x}$ & $1{,}792$ & $1{,}760$ \\
+        Chyba $|\tilde{x}-x^*|$ & $0{,}004$ & $0{,}027$ \\
+        Hodnota $f(\tilde{x})$ & $0{,}9960$ & $0{,}9965$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Porovnanie pre $N=10$.}
+\end{table}
+
+\noindent \textbf{N=20} \\
+Pre $N=20$ je metóda zlatého rezu výrazne efektívnejšia. Zatiaľ čo pri MPI sa interval zmenšuje faktorom 0,5 každé dva kroky, pri MZR sa zmenšuje faktorom približne 0,618 každý jeden krok.
+
+% TABUĽKA PRE N=20 (Doplnená pre kompletnosť)
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{N=20} & \textbf{MZR} & \textbf{MPI} \\
+        \midrule
+        Aproximácia $\tilde{x}$ & $1{,}7876$ & $1{,}7850$ \\
+        Chyba $|\tilde{x}-x^*|$ & $10^{-5}$ & $10^{-3}$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Porovnanie pre $N=20$.}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Analýza správania metódy pri rôznych východiskových intervaloch lokalizácie minima}
+
+Aj tu, rovnako ako pri metóde polenia intervalu, by sme očakávali lepšie výsledky pre kratší počiatočný interval, respektíve horšie výsledky pre dlhší počiatočný interval. Overíme, či je to skutočne tak aj pre túto metódu.
+
+\vspace{0.5cm}
+\noindent \textbf{Kratší počiatočný interval} \\
+Pre východiskový interval $I_0 = [0; 4]$ a $N=10$ vyčíslení dostávame výrazne presnejšiu aproximáciu než pri pôvodnom intervale $[-2; 6]$.
+
+% TABUĽKA PRE KRATŠÍ INTERVAL
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Parameter} & \textbf{Pôvodný } $[-2; 6]$ & \textbf{Kratší } $[0; 4]$ \\
+        \midrule
+        Dĺžka intervalu & 8 & 4 \\
+        Chyba pre $N=10$ & $0{,}0042$ & $0{,}0015$ \\
+        Hodnota $f(\tilde{x})$ & $0{,}9960$ & $0{,}9959$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Vplyv skrátenia intervalu na presnosť (N=10).}
+\end{table}
+
+\noindent Ako vidíme, skrátenie intervalu na polovicu viedlo k rádovému zlepšeniu chyby. To potvrdzuje, že ak máme o polohe minima dobrú predbežnú informáciu, oplatí sa zvoliť interval čo najužší.
+
+\vspace{0.5cm}
+\noindent \textbf{Dlhší počiatočný interval} \\
+Teraz skúsme interval zdvojnásobiť na $I_0 = [-6; 10]$. Tu očakávame, že metóda bude potrebovať viac krokov na dosiahnutie rovnakej presnosti.
+
+% TABUĽKA PRE DLHŠÍ INTERVAL
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Parameter} & \textbf{Pôvodný } $[-2; 6]$ & \textbf{Dlhší } $[-6; 10]$ \\
+        \midrule
+        Dĺžka intervalu & 8 & 16 \\
+        Chyba pre $N=10$ & $0{,}0042$ & $0{,}0210$ \\
+        Chyba pre $N=20$ & $10^{-5}$ & $10^{-4}$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Vplyv predĺženia intervalu na presnosť.}
+\end{table}
+
+\noindent Pre dvakrát dlhší počiatočný interval dostávame zhoršenie chyby. Aj pre vyšší počet vyčíslení ($N=20$) je rozdiel stále viditeľný.
+
+\vspace{0.5cm}
+\noindent \textbf{Nesymetrický východiskový interval} \\
+Na záver ešte preskúmajme nesymetrický interval $I_0 = [-10; 2]$. Pri metóde zlatého rezu, ktorá zmenšuje interval s konštantným pomerom $\tau \approx 0{,}618$, môže takáto asymetria spôsobiť, že v prvých krokoch sa interval skracuje „z nesprávnej strany“, kým sa nový bod nedostane do blízkosti minima.
+
+Pre $N=10$ vyčíslení dostávame chybu približne $0{,}015$, čo je horší výsledok než pri symetrickom intervale $[-2; 6]$. To ukazuje, že aj poloha minima v rámci intervalu zohráva úlohu v rýchlosti konvergencie v prvých iteráciách.
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Analýza numerických metód pre funkciu viac premenných}
+
+Na analýzu numerických metód pre funkciu viac (konkrétne dvoch) premenných sme si zvolili funkciu
+$$ f(x,y) = e^{-x} + e^{y} + (x-y^2)^2 + x, $$
+ktorá je definovaná a spojitá na celom priestore $\mathbb{R}^2$. Svoje „presné“ minimum táto funkcia nadobúda v bode
+$$ [x^*; y^*] \doteq [0.3881288312483782; -0.7409240564423611] $$
+s funkčnou hodnotou
+$$ f(x^*; y^*) \doteq 1.5689964037485506 $$
+Na nasledujúcich dvoch stranách sú potom vykreslené vrstevnicový graf a 3D graf tejto funkcie z rôznych pohľadov, ktoré ilustrujú jej tvar a globálne vlastnosti.
+
+Pre tento projekt sme zvolili \textit{Newtonovu metódu} a \textit{metódu združených gradientov}, ktorých správanie a rýchlosť konvergencie budeme pre túto funkciu analyzovať.
+
+\newpage
+
+% --- 10. STRANA: VRSTEVNICOVÝ GRAF ---
+\newpage
+\thispagestyle{plain}
+\vspace*{\fill}
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \input{graph_contours.pgf}}
+    \caption{Vrstevnicový graf funkcie $f(x,y)$.}
+    \label{fig:graph_contour}
+\end{figure}
+
+\vspace*{\fill}
+
+% --- 11. STRANA: 3D GRAF (Optimalizovaný pre rýchlosť) ---
+\newpage
+\thispagestyle{plain}
+\vspace*{\fill}
+\begin{figure}[H]
+    \centering
+    \resizebox{1\textwidth}{!}{
+    \input{graph_surface.pgf}}
+    \caption{Pohľad na graf funkcie v $\mathbb{R}^3$.}
+    \label{fig:graph_surface}
+\end{figure}
+\vspace*{\fill}
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Newtonova metóda}
+
+Táto metóda patrí medzi metódy druhého rádu, pretože pri hľadaní smeru poklesu využíva nielen gradient (prvé derivácie), ale aj Hessovu maticu (druhé derivácie). Hlavná myšlienka spočíva v tom, že v každom kroku funkciu $f$ aproximujeme Taylorovým polynómom druhého rádu a hľadáme jeho minimum.
+
+Členy minimalizujúcej postupnosti $\{x^{[k]}\}$ počítame iteračným vzťahom:
+$$ x^{[k+1]} = x^{[k]} - [\nabla^2 f(x^{[k]})]^{-1} \cdot \nabla f(x^{[k]}), $$
+kde $\nabla f(x^{[k]})$ je gradient funkcie a $\nabla^2 f(x^{[k]})$ je Hessova matica funkcie v bode $x^{[k]}$.
+Vďaka využitiu informácií o zakrivení funkcie táto metóda konverguje spravidla veľmi rýchlo (kvadraticky) v blízkosti lokálneho minima.
+
+\subsubsection{Analýza metódy pri rôznych hodnotách počiatočnej aproximácie}
+
+Na analýzu metódy pri rôznych počiatočných bodoch $x^{[0]}$ opäť potrebujeme vhodné ukončovacie kritérium. V súlade s teóriou volíme podmienku pre zmenu funkčnej hodnoty:
+$$ |f(x^{[k]}) - f(x^{[k-1]})| < 0{,}001. $$
+Budeme teda sledovať, po koľkých krokoch sa Newtonova metóda pre rôzne $x^{[0]}$ „ukončí“.
+
+\vspace{0.5cm}
+\noindent \textbf{Počiatočný bod} $x^{[0]} = [0; 0]$ \\
+Ako prvý volíme počiatok súradnicovej sústavy. Pre Newtonovu metódu očakávame veľmi rýchlu konvergenciu.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Iterácia} & \textbf{Bod } $x^{[k]}$ & \textbf{Hodnota } $f(x^{[k]})$ & \textbf{Rozdiel } $|f_k - f_{k-1}|$ \\
+        \midrule
+        0 & $[0.000000; 0.000000]$ & $2.000000$ & $0.367879$ \\
+        1 & $[0.000000; -1.000000]$ & $2.367879$ & $0.777743$ \\
+        2 & $[0.483674; -0.862755]$ & $1.590136$ & $0.020643$ \\
+        3 & $[0.400337; -0.759623]$ & $1.569493$ & $0.000496$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Priebeh NM pre $x^{[0]}=[0;0]$. Minimum nájdený v $(0.400337, -0.759623)$.}
+\end{table}
+
+\noindent Vidíme, že v tomto prípade metóda dosiahla požadovanú presnosť už po 3. iterácii. To potvrdzuje vysokú efektivitu Newtonovej metódy pre hladké konvexné funkcie, kedy „skočí“ takmer priamo do minima.
+
+\vspace{0.5cm}
+\noindent \textbf{Počiatočný bod} $x^{[0]} = [1.5; 0.5]$ \\
+Skúsme bod, ktorý je ďalej od minima a kde funkcia rastie vplyvom členu $e^y$.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        \textbf{Iterácia} & \textbf{Bod } $x^{[k]}$ & \textbf{Hodnota } $f(x^{[k]})$ & \textbf{Rozdiel } $|f_k - f_{k-1}|$ \\
+        \midrule
+        0 & $[1{,}5;\;0{,}5]$ & $4{,}934351$ & $0{,}028395$ \\
+        1 & $[0{,}624720;\;1{,}165504]$ & $4{,}905957$ & $1{,}941525$ \\
+        2 & $[-0{,}022409;\;0{,}598473]$ & $2{,}964432$ & $0{,}810767$ \\
+        3 & $[-0{,}150650;\;0{,}109123]$ & $2{,}153665$ & $0{,}432282$ \\
+        4 & $[-0{,}082210;\;-0{,}512321]$ & $1{,}721383$ & $0{,}143755$ \\
+        5 & $[0{,}268582;\;-0{,}662316]$ & $1{,}577628$ & $0{,}008577$ \\
+        6 & $[0{,}379564;\;-0{,}738632]$ & $1{,}569051$ & $0{,}000055$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Priebeh NM pre $x^{[0]} = [1{,}5;\;0{,}5]$.}
+\end{table}
+
+
+
+\noindent Aj pre tento vzdialenejší bod metóda konverguje veľmi svižne. Ukončovacie kritérium bolo splnené už v 6. kroku. Oproti metódam prvého rádu (ako metóda najväčšieho spádu) je to výrazný rozdiel. Následuje graf průběhu.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \input{newton_contour.pgf}}
+    \caption{Your figure caption}
+    \label{fig:newton_contour}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \resizebox{1\textwidth}{!}{
+    \input{newton_surface.pgf}}
+    \caption{Your figure caption}
+    \label{fig:newton_surface}
+\end{figure}
+\newpage
+
+
+
+\subsection{Metóda združených gradientov (MSG)}
+
+Táto metóda, v skriptách označovaná ako MSG, bola pôvodne navrhnutá pre riešenie sústav lineárnych rovníc s pozitívne definitnou maticou (čo zodpovedá minimalizácii kvadratickej funkcie). Pre kvadratické funkcie v $\mathbb{R}^n$ nájde MSG presné minimum najviac v $n$ krokoch.
+
+Pre všeobecné nekvadratické funkcie (náš prípad) sa metóda modifikuje tak, že nový smer hľadania $h_k$ konštruujeme ako lineárnu kombináciu aktuálneho antigradientu a predchádzajúceho smeru:
+$$ h_k = - \nabla f(x^{[k]}) + \beta_{k-1} h_{k-1}, $$
+kde pre prvý krok volíme $h_0 = -\nabla f(x^{[0]})$.
+Koeficient $\beta_{k-1}$ zabezpečuje, aby boli smery "združené". V našej analýze využijeme \textit{Fletcherov-Reevesov} vzorec:
+$$ \beta_{k-1}^{FR} = \frac{\|\nabla f(x^{[k]})\|^2}{\|\nabla f(x^{[k-1]})\|^2}. $$
+Metóda sa pri nekvadratických funkciách zvyčajne po $n$ krokoch „reštartuje“ (položí sa $\beta = 0$), aby sa eliminovali kumulované chyby a zachovala konvergencia.
+
+\subsubsection{Analýza metódy pri rôznych hodnotách počiatočnej aproximácie}
+
+Porovnanie vykonáme pre rovnaké počiatočné body ako pri Newtonovej metóde. Očakávame, že MSG bude potrebovať viac krokov než Newtonova metóda, ale menej než metóda najväčšieho spádu.
+
+\vspace{0.5cm}
+\noindent \textbf{Počiatočný bod} $x^{[0]} = [0; 0]$ \\
+Z tohto bodu sa metóda potrebuje "vymotať" z údolia.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        \textbf{Iterácia} & \textbf{Bod } $x^{[k]} = [x;y]$ & \textbf{Hodnota } $f(x^{[k]})$ & \textbf{Norma } $\|\nabla f\|$ \\
+        \midrule
+        0  & $[0.000000;\; 0.000000]$   & 2.000000 & -- \\
+        1  & $[0.000000;\; -0.500000]$  & 1.669031 & 1.000000 \\
+        2  & $[0.250000;\; -0.553265]$  & 1.607017 & 0.511223 \\
+        \dots & \dots & \dots & \dots \\
+        13 & $[0.388215;\; -0.741333]$  & 1.568997 & 0.015403 \\
+        14 & $[0.388461;\; -0.740832]$  & 1.568997 & 0.002233 \\
+        15 & $[0.388004;\; -0.740889]$  & 1.568996 & 0.001887 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Priebeh MSG pre $x^{[0]} = [0;0]$.}
+\end{table}
+
+
+\noindent \textbf{Počiatočný bod} $x^{[0]} = [1.5; 0.5]$ \\
+V tomto prípade je funkcia strmšia (vplyvom exponenciály), čo môže ovplyvniť veľkosť kroku v prvej iterácii.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{cccc}
+        \toprule
+        \textbf{Iterácia} & \textbf{Bod } $x^{[k]} = [x;y]$ & \textbf{Hodnota } $f(x^{[k]})$ & \textbf{Norma } $\|\nabla f\|$ \\
+        \midrule
+        0  & $[1.500000;\; 0.500000]$   & 4.934351 & -- \\
+        1  & $[-0.138435;\; 0.925639]$  & 4.524030 & 3.385639 \\
+        2  & $[0.396305;\; -0.626467]$  & 1.603598 & 6.566560 \\
+        \dots & \dots & \dots & \dots \\
+        9  & $[0.387814;\; -0.741050]$  & 1.568997 & 0.015270 \\
+        10 & $[0.388119;\; -0.740641]$  & 1.568997 & 0.002043 \\
+        11 & $[0.388183;\; -0.740998]$  & 1.568996 & 0.001725 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Priebeh MSG pre $x^{[0]} = [1.5;0.5]$.}
+\end{table}
+
+
+\noindent Z výsledkov vidíme, že MSG konverguje pomalšie než Newtonova metóda (ktorá potrebovala cca 3-4 kroky), ale nevyžaduje výpočet inverznej Hessovej matice, čo je jej hlavná výhoda pri úlohách s veľkým počtom premenných. Následuje graf průběhu.
+
+\begin{figure}[H]
+    \centering
+    \resizebox{0.8\textwidth}{!}{
+    \input{cg_contour.pgf}}
+    \caption{Your figure caption}
+    \label{fig:cg_contour}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \resizebox{1\textwidth}{!}{
+    \input{cg_surface.pgf}}
+    \caption{Your figure caption}
+    \label{fig:cg_surface}
+\end{figure}
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Záverečné zhrnutie a porovnanie metód}
+
+Cieľom tohto projektu bola analýza vybraných numerických metód pre minimalizáciu funkcií jednej a viacerých premenných. Na základe vykonaných experimentov a teoretických poznatkov môžeme formulovať nasledujúce závery.
+
+\subsection*{Funkcia jednej premennej}
+Pre minimalizáciu funkcie $f(x)$ sme porovnávali \textit{Metódu polenia intervalu} (MPI) a \textit{Metódu zlatého rezu} (MZR).
+
+\begin{itemize}
+    \item \textbf{Efektivita vyčíslení:} Zatiaľ čo MPI zmenšuje interval lokalizácie minima v každom kroku na polovicu (faktor 0,5), vyžaduje pre každé zmenšenie dve nové funkčné hodnoty (resp. v optimalizovanej verzii jednu novú hodnotu na jednu iteráciu, ale s menším ziskom presnosti na krok). MZR zmenšuje interval s faktorom $1/\tau \approx 0,618$, ale po prvotnej inicializácii vyžaduje v každom kroku iba \textbf{jedno} nové vyčíslenie funkcie[cite: 476].
+    \item \textbf{Záver:} Pre našu testovaciu funkciu sa MZR ukázala ako efektívnejšia metóda, pretože dosiahla porovnateľnú presnosť s menším celkovým počtom vyčíslení funkčných hodnôt než MPI. Potvrdilo sa, že MZR je vhodnejšia v prípadoch, kde je vyčíslenie funkčnej hodnoty výpočtovo náročné.
+\end{itemize}
+
+\subsection*{Funkcia viac premenných}
+Pre funkciu dvoch premenných $f(x,y)$ sme analyzovali \textit{Newtonovu metódu} (NM) a \textit{Metódu združených gradientov} (MSG).
+
+\begin{itemize}
+    \item \textbf{Rýchlosť konvergencie:} Newtonova metóda preukázala svoju teoretickú kvadratickú konvergenciu. Ak sme zvolili počiatočný bod dostatočne blízko minima, metóda našla presné riešenie v extrémne malom počte krokov (cca 3--4). MSG konvergovala pomalšie, čo je dané tým, že ide o metódu, ktorá nevyužíva informácie druhého rádu priamo v každom kroku tak agresívne ako NM.
+    \item \textbf{Výpočtová náročnosť:} Hoci NM potrebovala menej iterácií, v každom kroku vyžadovala výpočet a inverziu Hessovej matice $\nabla^2 f(x)$. Pre našu funkciu dvoch premenných to bolo zvládnuteľné, ale pre úlohy s vysokou dimenziou $n$ rastie náročnosť tejto operácie s $n^3$.
+    \item \textbf{Záver:} MSG sa ukázala ako výhodný kompromis[cite: 1222]. Nevyžaduje výpočet inverznej matice, má malé pamäťové nároky a hoci potrebuje viac iterácií než NM, každá iterácia je výpočtovo lacnejšia. Pre našu nekvadratickú funkciu sme museli využiť reštartovanie metódy, aby sme zabezpečili konvergenciu.
+\end{itemize}
+
+Z experimentov vyplýva, že neexistuje univerzálna „najlepšia“ metóda. Voľba algoritmu musí vždy zohľadňovať vlastnosti minimalizovanej funkcie, dimenziu problému, dostupný výpočtový výkon a požiadavky na presnosť.
+
+\newpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%ZOZNAM LITERATÚRY ---
+\newpage
+\addcontentsline{toc}{section}{Zoznam použitej literatúry} % Pridá sekciu do obsahu, hoci nemá číslo
+
+\begin{thebibliography}{9} % {9} znamená zarovnanie pre max jednociferný počet zdrojov
+
+    % 1. Vaše skriptá (Zdroj z PDF)
+    \bibitem{zemanek}
+    ZEMÁNEK, Petr. \textit{M5170: Matematické programování -- Kapitola 3: Numerické metody řešení úloh matematického programování I}. [učebný text]. Brno: Masarykova univerzita, Přírodovědecká fakulta, 2024.
+
+    % 2. Štandardná učebnica na MU (odporúčam tam nechať, vyzerá to dobre)
+    \bibitem{horova}
+    HOROVÁ, Ivana a Jiří ZELINKA. \textit{Numerické metody}. 2. rozšířené vydání. Brno: Masarykova univerzita, 2008. ISBN 978-80-210-4644-8.
+
+    % 3. Softvér, ktorý ste použili (voliteľné, ale vhodné)
+    \bibitem{matlab}
+    MATHWORKS. \textit{MATLAB Documentation}. [online]. Dostupné z: \url{https://www.mathworks.com/help/matlab/}.
+
+\end{thebibliography}
+
+\end{document}
