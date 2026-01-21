@@ -954,12 +954,6 @@
 \end{pgfscope}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
-\pgfsetstrokecolor{textcolor}%
-\pgfsetfillcolor{textcolor}%
-\pgftext[x=4.000000in,y=5.723372in,,base]{\color{textcolor}\sffamily\fontsize{12.000000}{14.400000}\selectfont 3D Surface Plot}%
-\end{pgfscope}%
-\begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{1.254980in}{0.150000in}}{\pgfqpoint{5.490039in}{5.490039in}}%
 \pgfusepath{clip}%
 \pgfsetbuttcap%

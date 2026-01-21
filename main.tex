@@ -102,7 +102,7 @@ ktorá je spojitá na celom $\mathbb{R}$. Svoje „presné“ minimum táto funk
 $$ x^* \doteq 1{,}74261110151914722 $$
 s funkčnou hodnotou
 $$ f(x^*) \doteq 0{,}9450058166282782830. $$
-Zvolená funkcia pozostáva z kvadratického člena a goniometrických zložiek, čo jej dodáva charakteristický priebeh v tvare 'vlnitej' paraboly. Dominantný vplyv kvadratickej časti zabezpečuje, že oscilácie trigonometrických členov nenarúšajú celkový trend a funkcia si v širšom okolí minima zachováva unimodalitu. Tiež vidíme, že pre jej deriváciu platí $f'(x) = 2(x - 2) + \frac{3}{2}\cos(3x) + \frac{2}{3}\sin(2x)$. Keďže rovnica $f'(x) = 0$ je transcendentná a nemá analytické riešenie, predstavuje táto funkcia vhodný testovací model pre porovnanie efektívnosti numerických metód.
+Zvolená funkcia pozostáva z kvadratického člena a goniometrických zložiek, čo jej dodáva charakteristický priebeh v tvare vlnitej paraboly. Dominantný vplyv kvadratickej časti zabezpečuje, že oscilácie trigonometrických členov nenarúšajú celkový trend a funkcia si v širšom okolí minima zachováva unimodalitu. Tiež vidíme, že pre jej deriváciu platí $f'(x) = 2(x - 2) + \frac{3}{2}\cos(3x) + \frac{2}{3}\sin(2x)$. Keďže rovnica $f'(x) = 0$ je transcendentná a nemá analytické riešenie, predstavuje táto funkcia vhodný testovací model pre porovnanie efektívnosti numerických metód.
 Na nasledujúcej strane je vykreslený graf tejto funkcie pre obmedzený rozsah hodnôt $x$ a $y$.
 
 Pre tento projekt sme vybrali \textbf{metódu rozpoľovania intervalu} a \textbf{metódu zlatého rezu}, ktorých správanie budeme na tejto funkcii skúmať.\footnote{Na analýzu numerických metód v $\mathbf{R}$ používame MapleCloud skripty z https://www.math.muni.cz/~zemanekp/vyuka.html}
@@ -228,11 +228,23 @@ Pre $N=100$ dostávame výsledný ILM približne ako $I_{50} = [1{,}732631689; 1
 Výsledky pre 100 vyčíslení vykazujú takmer úplnú identitu s predchádzajúcim meraním. Apriórny odhad maximálnej chyby dosiahol svoju limitnú hodnotu $\epsilon_{max} \doteq 0{,}01$, čo exaktne zodpovedá zvolenému parametru $\delta$. Skutočná chyba $\epsilon \doteq 0{,}00002058$ sa oproti $N=50$ zmenila až na deviatom desatinnom mieste, čo je z hľadiska praktickej numerickej analýzy zanedbateľný posun. Z hľadiska efektivity výpočtu môžeme konštatovať, že pre danú funkciu a konfiguráciu parametrov je $N=100$ už neefektívnym „overkillom“. 
 
 V nadväznosti na doterajšie pozorovania sa v ďalšej analýze obmedzíme na dve reprezentatívne hodnoty $N=10$ a $N=50$. Tento výber nám umožňuje sledovať dostatočný kontrast v presnosti bez zbytočnej redundancie výpočtov. Zatiaľ čo $N=10$ reprezentuje fázu úspešnej počiatočnej lokalizácie minima, hodnota $N=50$ už predstavuje dosiahnutie praktického limitu presnosti algoritmu pri zvolenej hodnote $\delta$.
+
+Pre zaujímovosť (bez slovnej analýzy) ešte uvádzame tabuľku pre rôzne hodnoty parametru delta $\delta:$
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\textwidth]{grafy/vhyna.png}
+    \label{fig:moj_obrazok}
+\end{figure}
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Analýza správania metódy pri rôznych východiskových intervaloch lokalizácie minima}
 
-V nasledujúcej časti zanalyzujeme vplyv šírky počiatočného intervalu na celkovú presnosť lokalizácie optima. Náš pôvodný interval $I_0 = [-6; 10]$ budeme rôzne modifikovať. Najskôr ho zúžime na polovicu (t.j. $[-3; 5]$) a následne ho v dvakrát rozšírime (t.j. $[-12; 20]$). Motiváciou pre tento experiment je štruktúra apriórneho odhadu chyby, ktorý vykazuje priamu závislosť od vstupnej dĺžky intervalu $(b-a)$. Zo vzťahu pre dĺžku výsledného intervalu po $k$ krokoch $$l_k = \frac{b-a}{2^k} + \delta \frac{2^k - 1}{2^{k-1}}$$je zrejmé, že redukcia šírky počiatočného intervalu by mala pri konštantnom $N$ viesť k vyššej presnosti, zatiaľ čo jeho rozšírenie bude mať za následok nárast chyby aproximácie. 
+V nasledujúcej časti zanalyzujeme vplyv šírky počiatočného intervalu na celkovú presnosť lokalizácie optima pri $\delta=0,01$. Náš pôvodný interval $I_0 = [-6; 10]$ budeme rôzne modifikovať. Najskôr ho zúžime na polovicu (t.j. $[-3; 5]$) a následne ho v dvakrát rozšírime (t.j. $[-12; 20]$). Motiváciou pre tento experiment je štruktúra apriórneho odhadu chyby, ktorý vykazuje priamu závislosť od vstupnej dĺžky intervalu $(b-a)$. Zo vzťahu pre dĺžku výsledného intervalu po $k$ krokoch $$l_k = \frac{b-a}{2^k} + \delta \frac{2^k - 1}{2^{k-1}}$$je zrejmé, že redukcia šírky počiatočného intervalu by mala pri konštantnom $N$ viesť k vyššej presnosti, zatiaľ čo jeho rozšírenie bude mať za následok nárast chyby aproximácie. 
 
 Ďalej sa pozrieme na ďalšie iné zmeny, ako je napríklad nesymetrický interval s minimom pri okraji $I_{asym1} = [ 1{,}7; 15 ]$, nesymetrickým intervalom s minimom mimo okraja $I_{asym2} = [ -6; 21 ]$, mikro intervalom $I_{micro} = [ 1{,}73; 1{,}76 ]$ a obrovským intervalom $I_{giant} = [ -100; 100 ]$.
 \newpage
@@ -284,7 +296,7 @@ Pre východiskový interval $I_0 = [1.7; 15]$ a $N=50$ vyčíslení dostávame v
 
 \vspace{0.3cm}
 
-Hoci bol ľavý krajný bod už od začiatku vynikajúcim odhadom, pri $N=10$ sme stále skončili s chybou okolo 0,22. Je to jasný dôkaz toho, že algoritmus o skutočnej polohe minima na začiatku „netuší“ a musí sa k nemu aj tak postupne prepracovať cez postupné skracovanie dlhej pravej strany intervalu. Opäť sa nám však potvrdilo, že pri $N=50$ sme narazili na ten istý presnostný strop 0,01 ako v predchádzajúcich prípadoch. Ukazuje sa teda, že ani takáto výrazná „nápoveda“ na štarte nepomôže metóde prekonať jej vlastné limity. Bez ohľadu na to, ako veľmi asymetricky začneme, metóda sa pri dostatočnom počte vyčíslení vždy ustáli na rovnakom výslednom ILM, ktorý je pevne daný našou hodnotou delta.
+Hoci bol ľavý krajný bod už od začiatku vynikajúcim odhadom, pri $N=10$ sme stále skončili s chybou okolo 0,22. Je to jasný dôkaz toho, že algoritmus o skutočnej polohe minima na začiatku „netuší“ a musí sa k nemu aj tak postupne prepracovať cez postupné skracovanie dlhej pravej strany intervalu. Opäť sa nám však potvrdilo, že pri $N=50$ sme narazili na ten istý presnostný strop 0,01 ako v predchádzajúcich prípadoch. Ukazuje sa teda, že ani takáto výrazná nápoveda na štarte nepomôže metóde prekonať jej vlastné limity. Bez ohľadu na to, ako veľmi asymetricky začneme, metóda sa pri dostatočnom počte vyčíslení vždy ustáli na rovnakom výslednom ILM, ktorý je pevne daný našou hodnotou delta.
 
 \vspace{0.5cm}
 \noindent \underline{\textbf{Nesymetrický východiskový interval s minimom ďalej od okraja} }
@@ -499,7 +511,7 @@ Aj pri tomto obrovskom rozsahu šírky 200 sa ukázalo, že zlatý rez je extré
 
 \vspace{0.3cm}
 
-Z celého nášho testovania jasne vyplýva, že metóda zlatého rezu je efektívnejšia, pretože vďaka lepšiemu využitiu bodov dokáže urobiť takmer dvojnásobok krokov pri rovnakom počte meraní. Najväčší rozdiel sme videli pri vyššom počte vyčíslení, kde metóda polenia úplne narazila na svoj strop kvôli parametru delta, zatiaľ čo zlatý rez bez problémov pokračoval v spresňovaní až k astronomicky malým hodnotám. Ukázalo sa tiež, že hoci šírka počiatočného intervalu výrazne ovplyvňuje presnosť v úvode, zlatý rez dokáže aj obrovské „makro“ intervaly spracovať oveľa rýchlejšie a s lepšou matematickou istotou než metóda polenia. Celkovo teda môžeme povedať, že ak nepotrebujeme extrémne vysokú presnosť a máme minimum v strede, metódy sú porovnateľné, ale pre akékoľvek náročnejšie výpočty je zlatý rez jednoznačne lepšou voľbou.
+Z celého nášho testovania jasne vyplýva, že metóda zlatého rezu je efektívnejšia, pretože vďaka lepšiemu využitiu bodov dokáže urobiť takmer dvojnásobok krokov pri rovnakom počte meraní. Najväčší rozdiel sme videli pri vyššom počte vyčíslení, kde metóda polenia úplne narazila na svoj strop kvôli parametru delta, zatiaľ čo zlatý rez bez problémov pokračoval v spresňovaní až k astronomicky malým hodnotám. Ukázalo sa tiež, že hoci šírka počiatočného intervalu výrazne ovplyvňuje presnosť v úvode, zlatý rez dokáže aj obrovské intervaly spracovať oveľa rýchlejšie a s lepšou matematickou istotou než metóda polenia. Celkovo teda môžeme povedať, že ak nepotrebujeme extrémne vysokú presnosť a máme minimum v strede, metódy sú porovnateľné, ale pre akékoľvek náročnejšie výpočty je zlatý rez jednoznačne lepšou voľbou.
 
 
 \newpage
@@ -515,59 +527,34 @@ s funkčnou hodnotou
 $$ f(x^*; y^*) \doteq 1.568996403. $$
 Na nasledujúcich troch stranách sú potom vykreslené vrstevnicový graf a 3D graf tejto funkcie z rôznych pohľadov, ktoré ilustrujú jej tvar a globálne vlastnosti.
 
-Pre tento projekt sme zvolili \textbf{Newtonovu metódu (NM)} a \textbf{metódu združených gradientov (MSG)}, ktorých správanie a rýchlosť konvergencie budeme pre túto funkciu analyzovať.\footnote{Analyzujeme skrz Python, použité skripty uvádzame v prílohe.}
+Pre tento projekt sme zvolili \textbf{Newtonovu metódu (NM)} a \textbf{metódu združených gradientov (MSG)}, ktorých správanie a rýchlosť konvergencie budeme pre túto funkciu analyzovať.\footnote{Používame Python, použité skripty možno nájsť na https://github.com/RadimCech/mat\_prog\_projekt}
 
 \newpage
 
 % --- 10. STRANA: VRSTEVNICOVÝ GRAF ---
 \newpage
 
-\iffalse
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.9\textwidth]{Grap1.png}
-    \caption{Vrstevnicový graf funkcie $ f(x,y) = e^{-x} + e^{y} + (x-y^2)^2 + x.$}
-    \label{fig:moj_obrazok}
-\end{figure}
-
-\newpage
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.9\textwidth]{Grap2.png}
-    \caption{3D graf funkcie $f(x,y)$.}
-    \label{fig:moj_obrazok}
-\end{figure}
-
-\fi
-
 \begin{figure}[H]
-    \centering
-    \resizebox{0.8\textwidth}{!}{
-        \input{graph_contours.pgf}
-    }
-    \caption{Vrstevnicový graf funkcie $f(x,y)$.}
-    \label{fig:graph_contour}
+   \centering
+   \resizebox{0.8\textwidth}{!}{
+   \input{grafy/graph_contours.pgf}}
+   \caption{Vrstevnicový graf funkcie $f(x,y)$.}
+   \label{fig:graph_contour}
 \end{figure}
 
 \vspace*{\fill}
 
-% --- 11. STRANA: 3D GRAF (Optimalizovaný pre rýchlosť) ---
 \newpage
 \thispagestyle{plain}
 \vspace*{\fill}
-
 \begin{figure}[H]
-    \centering
-    \resizebox{1\textwidth}{!}{
-        \input{graph_surface.pgf}
-    }
-    \caption{Pohľad na graf funkcie v $\mathbb{R}^3$.}
-    \label{fig:graph_surface}
+   \centering
+   \resizebox{1\textwidth}{!}{
+   \input{grafy/graph_surface.pgf}}
+   \caption{Pohľad na graf funkcie v $\mathbb{R}^3$.}
+   \label{fig:graph_surface}
 \end{figure}
-
 \vspace*{\fill}
-
 \newpage
 
 \begin{figure}[h]
@@ -578,6 +565,7 @@ Pre tento projekt sme zvolili \textbf{Newtonovu metódu (NM)} a \textbf{metódu 
 \end{figure}
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection{Newtonova metóda}
 
@@ -597,6 +585,8 @@ Budeme teda sledovať, po koľkých krokoch sa Newtonova metóda pre rôzne $x^{
 \newpage
 \noindent \textbf{Počiatočný bod} $x^{[0]} = [0; 0]$ 
 \vspace{0.5cm}
+
+
 Ako prvý volíme počiatok súradnicovej sústavy. Pre Newtonovu metódu očakávame veľmi rýchlu konvergenciu.
 
 \begin{table}[h!]
@@ -611,7 +601,7 @@ Ako prvý volíme počiatok súradnicovej sústavy. Pre Newtonovu metódu očak�
         3 & $[0.400337; -0.759623]$ & $1.569493$ & $0.000496$ \\
         \bottomrule
     \end{tabular}
-    \caption{Priebeh NM pre $x^{[0]}=[0;0]$. Minimum nájdený v $(0.400337, -0.759623)$.}
+    \caption{Priebeh NM pre $x^{[0]}=[0;0]$. Minimum nájdené v $(0.400337, -0.759623)$.}
 \end{table}
 
 
@@ -637,8 +627,9 @@ Ako prvý volíme počiatok súradnicovej sústavy. Pre Newtonovu metódu očak�
     \label{fig:newton_komplet}
 \end{figure}
 
+\noindent Vidíme, že v tomto prípade metóda dosiahla požadovanú presnosť už po 3. iterácii. To potvrdzuje vysokú efektivitu Newtonovej metódy pre hladké konvexné funkcie, kedy skočí takmer priamo do minima.
 
-\noindent Vidíme, že v tomto prípade metóda dosiahla požadovanú presnosť už po 3. iterácii. To potvrdzuje vysokú efektivitu Newtonovej metódy pre hladké konvexné funkcie, kedy „skočí“ takmer priamo do minima.
+
 
 \newpage
 \noindent \textbf{Počiatočný bod} $x^{[0]} = [1.5; 0.5]$
@@ -666,7 +657,7 @@ Skúsme bod, ktorý je ďalej od minima a kde funkcia rastie vplyvom členu $e^y
 
 
 
-\noindent Aj pre tento vzdialenejší bod metóda konverguje veľmi svižne. Ukončovacie kritérium bolo splnené už v 6. kroku. Oproti metódam prvého rádu (ako metóda najväčšieho spádu) je to výrazný rozdiel. Následuje graf průběhu.
+Napriek tomu, že sme zvolili počiatočný bod v oblasti s výraznejším stúpaním funkcie, metóda našla minimum pomerne hladko. Počet iterácií sa síce zvýšil na šesť, čo je dvojnásobok oproti predchádzajúcemu prípadu, no vzhľadom na vzdialenosť bodu ide stále o veľmi rýchlu konvergenciu. Grafy potvrdzujú, že algoritmus dokázal efektívne korigovať smer a padnúť do optima aj z tejto nevýhodnejšej pozície. 
 
 
 \begin{figure}[H]
@@ -690,7 +681,6 @@ Skúsme bod, ktorý je ďalej od minima a kde funkcia rastie vplyvom členu $e^y
     
     \label{fig:newton_komplet}
 \end{figure}
-
 
 
 \newpage
@@ -719,6 +709,8 @@ Skúsme bod, ktorý je ďalej od minima a kde funkcia rastie vplyvom členu $e^y
     \label{tab:newton_priebeh}
 \end{table}
 
+Aj napriek voľbe počiatočného bodu s veľkými súradnicami metóda skonvergovala už po štyroch iteráciách. Výrazný posun v prvej iterácii smerom k optimu potvrdzuje kvadratický charakter konvergencie, pričom ďalšie iterácie zabezpečili postupné spresňovanie riešenia na požadovanú presnosť.
+
 
 \begin{figure}[H]
     \centering
@@ -743,6 +735,72 @@ Skúsme bod, ktorý je ďalej od minima a kde funkcia rastie vplyvom členu $e^y
 \end{figure}
 
 
+Ďalej si už ukážeme tabuľku súhrnných výsledkov Newtonovej metódy pre rôzne počiatočné body.
+
+
+
+
+\newpage
+
+\begin{table}[h!]
+\centering
+% \resizebox{šírka}{výška (zachovať pomer)}{obsah}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Počiatočný bod} $x^{[0]}$ & \textbf{Iterácie} ($k$) & \textbf{Nájdené minimum} $\tilde{x}$ & \textbf{Hodnota} $f(\tilde{x})$ & \textbf{Rozdiel} $|f_k - f_{k-1}|$ \\ \hline
+$[0.0; 0.0]$     & 3 & $[0.4003; -0.7596]$ & $1,569493$ & $0,000496$ \\ \hline
+$[1.5; 0.5]$     & 6 & $[0.3796; -0.7386]$ & $1,569051$ & $0,000055$ \\ \hline
+$[2.0; -2.0]$    & 4 & $[0.3921; -0.7485]$ & $1,569088$ & $0,000092$ \\ \hline
+$[-1.0; -1.0]$   & 4 & $[0.3902; -0.7437]$ & $1,569006$ & $0,000028$ \\ \hline
+$[-1.0; 1.0]$    & 5 & $[0.3826; -0.7352]$ & $1,569075$ & $0,000227$ \\ \hline
+$[2.0; 2.0]$     & 6 & $[0.3829; -0.7354]$ & $1,569070$ & $0,000204$ \\ \hline
+$[-2.0; -2.0]$   & 5 & $[0.3890; -0.7420]$ & $1,569001$ & $0,000010$ \\ \hline
+$[0.5; -1.0]$    & 2 & $[0.3851; -0.7368]$ & $1,569022$ & $0,000063$ \\ \hline
+$[3.0; 0.0]$     & 5 & $[0.3832; -0.7359]$ & $1,569064$ & $0,000188$ \\ \hline
+$[0.0; 2.0]$     & 6 & $[0.3818; -0.7341]$ & $1,569092$ & $0,000277$ \\ \hline
+$[5.0; 5.0]$     & 8 & $[0.3822; -0.7348]$ & $1,569080$ & $0,000150$ \\ \hline
+$[-5.0; -5.0]$   & 7 & $[0.3895; -0.7429]$ & $1,569003$ & $0,000012$ \\ \hline
+$[10.0; 0.0]$    & 9 & $[0.3835; -0.7362]$ & $1,569061$ & $0,000210$ \\ \hline
+\end{tabular}%
+}
+\caption{Súhrnné výsledky Newtonovej metódy pre blízke aj vzdialené body}
+\label{tab:newton_results_extended}
+\end{table}
+
+Je zrejmé, že aj pri extrémnom počiatočnom bode $[10; 0]$ metóda skonvergovala už po 9 iteráciách. To naznačuje, že Newtonova metóda je pre túto funkciu veľmi stabilná a dokáže efektívne pracovať aj pri veľkej vzdialenosti od optima, najmä vďaka presnej informácii o zakrivení poskytovanej Hessovou maticou.
+
+Naskytuje sa otázka, ako moc by sa zmenili iterácie, keby sme zvolili  $\epsilon = 10^{-6}$, teda sprísnené ukončovacie kritérium. Výsledky môžeme vidieť v nasledujúcej tabuľke
+
+\begin{table}[H]
+\centering
+% \resizebox{šírka}{výška (zachovať pomer)}{obsah}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Počiatočný bod} $x^{[0]}$ & \textbf{Iterácie} ($k$) & \textbf{Nájdené minimum} $\tilde{x}$ & \textbf{Hodnota} $f(\tilde{x})$  \\ \hline
+$[0.0; 0.0]$     & 4 & $[0.3881; -0.7409]$ & $1,568996$ \\ \hline
+$[1.5; 0.5]$     & 7 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[2.0; -2.0]$    & 5 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[-1.0; -1.0]$   & 5 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[-1.0; 1.0]$    & 6 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[2.0; 2.0]$     & 7 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[-2.0; -2.0]$   & 6 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[0.5; -1.0]$    & 3 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[3.0; 0.0]$     & 6 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[0.0; 2.0]$     & 7 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[5.0; 5.0]$     & 9 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[-5.0; -5.0]$   & 8 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+$[10.0; 0.0]$    & 10 & $[0.3881; -0.7409]$ & $1,568996$  \\ \hline
+\end{tabular}%
+}
+\caption{Súhrnné výsledky Newtonovej metódy pre sprísnené kritérium $\epsilon = 10^{-6}$}
+\label{tab:newton_results_strict}
+\end{table}
+
+Vidíme, že pre Newtonovu metódu je nastavenie $\epsilon = 0{,}001$ pomerne benevolentné. Vzhľadom na jej obrovskú rýchlosť by nastavenie $\epsilon = 10^{-6}$ stálo len zanedbateľný výpočtový čas navyše (maximálne 1-2 iterácie navyše), no prinieslo by oveľa presnejšie výsledky. Pri pomalších metódach (ako metoda najväčšieho spádu) by však sprísnenie kritéria mohlo znamenať stovky iterácií navyše.
+
+\newpage
 
 \subsection{Metóda združených gradientov (MSG)}
 
@@ -753,9 +811,13 @@ $$ h_k = - \nabla f(x^{[k]}) + \beta_{k-1} h_{k-1}, $$
 kde pre prvý krok volíme $h_0 = -\nabla f(x^{[0]})$.
 Koeficient $\beta_{k-1}$ zabezpečuje, aby boli smery združené. V našej analýze využijeme \textit{Fletcherov-Reevesov} vzorec
 $$ \beta_{k-1}^{FR} = \frac{\|\nabla f(x^{[k]})\|^2}{\|\nabla f(x^{[k-1]})\|^2}. $$
-Metóda sa pri nekvadratických funkciách zvyčajne po $n$ krokoch „reštartuje“ (položí sa $\beta = 0$), aby sa eliminovali kumulované chyby a zachovala konvergencia. Štandardne sa volí dĺžka cyklu pred resetom $\beta$ tak, aby zodpovedala počtu premenných minimalizovanej funkcie. Hodnota $\beta_{k-1}$ sa teda bude rovnať $0$ pri každej párnej iterácii, t. j. pre $k = 2n, n \in \mathbb{N}_0$.
+Metóda sa pri nekvadratických funkciách zvyčajne po $n$ krokoch reštartuje (položí sa $\beta = 0$), aby sa eliminovali kumulované chyby a zachovala konvergencia. Štandardne sa volí dĺžka cyklu pred resetom $\beta$ tak, aby zodpovedala počtu premenných minimalizovanej funkcie. Hodnota $\beta_{k-1}$ sa teda bude rovnať $0$ pri každej párnej iterácii, t. j. pre $k = 2n, n \in \mathbb{N}_0$.
 
-\subsubsection{Analýza metódy pri rôznych hodnotách počiatočnej aproximácie}
+\vspace{0.3cm}
+
+\noindent {\Large \textbf{Analýza metódy pri rôznych hodnotách počiatočnej aproximácie}}
+
+\vspace{0.3cm}
 
 Teraz sa zameriame na analýzu metódy združených gradientov v závislosti od rôznych počiatočných bodov iteračného procesu. Súbežne budeme skúmať variant MSG bez resetu, ako aj MSG s resetovaním hodnoty $\beta$ s dĺžkou cyklu 2, čo predstavuje štandardnú dĺžku vzhľadom na počet premenných funkcie $f(x, y)$.
 Porovnanie vykonáme pre rovnaké počiatočné body ako pri Newtonovej metóde.
@@ -788,6 +850,7 @@ Naším cieľom bude sledovať počet krokov (iterácií), ktoré metóda potreb
     \caption{Priebeh MSG pre $x^{[0]} = [0;0]$.}
 \end{table}
 
+Pri tomto počiatočnom bode vidíme výrazný rozdiel oproti Newtonovej metóde – konvergencia tu trvala až 15 iterácií, zatiaľ čo Newton to zvládol za 3. Graf ukazuje, ako sa metóda postupne približuje k minimu jemnejším cik-cak pohybom, čo je daň za to, že nepoužívame informácie z druhých derivácií (Hessovu maticu). Pravidelný reštart parametra $\beta$ každé dva kroky tu zjavne funguje a udržuje metódu stabilnú, aj keď je pomalšia.
 
 \begin{figure}[H]
     \centering
@@ -808,6 +871,7 @@ Naším cieľom bude sledovať počet krokov (iterácií), ktoré metóda potreb
 
     \label{fig:newton_komplet}
 \end{figure}
+
 
 
 \newpage
@@ -852,15 +916,11 @@ V tomto prípade je funkcia strmšia (vplyvom exponenciály), čo môže ovplyvn
     \label{fig:newton_komplet}
 \end{figure}
 
-\noindent Z výsledkov vidíme, že MSG konverguje pomalšie než Newtonova metóda (ktorá potrebovala cca 3-4 kroky), ale nevyžaduje výpočet inverznej Hessovej matice, čo je jej hlavná výhoda pri úlohách s veľkým počtom premenných. Následuje graf průběhu.
-
-
-
-
+Na vrstevnicovom grafe je pekne vidieť, ako po prvotných dlhých skokoch metóda spomalí a už len jemne dolaďuje polohu v okolí minima. Hoci sme potrebovali viac krokov než pri Newtonovej metóde, výhodou je, že výpočet každej iterácie bol výrazne jednoduchší bez potreby invertovania matice.
 
 \newpage
 \noindent \textbf{Počiatočný bod} $x^{[0]} = [2; -2]$ \\
-Z tohto bodu sa metóda potrebuje "vymotať" z údolia.
+Z tohto bodu sa metóda potrebuje vymotať z údolia.
 
 \begin{table}[H]
     \centering
@@ -879,6 +939,8 @@ Z tohto bodu sa metóda potrebuje "vymotať" z údolia.
     \end{tabular}
     \caption{Priebeh MSG pre $x^{[0]} = [0;0]$.}
 \end{table}
+
+Na grafe vidíme výrazný cik-cak pohyb, pretože metóda musela mnohokrát korigovať smer, aby sa udržala v klesajúcom koryte funkcie. Kým Newtonova metóda vďaka znalosti zakrivenia (Hessiánu) prekonala tento úsek v podstate jedným skokom, MSG sa k minimu musela prepracovať postupne, čo vysvetľuje vyšší počet iterácií.
 
 \begin{figure}[H]
     \centering
@@ -899,6 +961,7 @@ Z tohto bodu sa metóda potrebuje "vymotať" z údolia.
 
     \label{fig:newton_komplet}
 \end{figure}
+
 
 \newpage
 \subsubsection{MSG bez nulování $\beta$}
@@ -924,6 +987,8 @@ Z tohto bodu sa metóda potrebuje "vymotať" z údolia.
     \caption{Priebeh MSG pre $x^{[0]} = [0;0]$.}
 \end{table}
 
+Tu sa ukázalo, že vynechanie pravidelného nulovania parametra $\beta$ má na konvergenciu negatívny vplyv. Počet iterácií narástol na 20, čo je o tretinu viac ako v prípade s resetom (kde to bolo 15). Je vidieť, že bez reštartu sa v smere hľadania postupne kumulujú chyby a metóda stráca svoju efektivitu, kým sa konečne trafí do presného minima.
+
 
 \begin{figure}[H]
     \centering
@@ -946,9 +1011,9 @@ Z tohto bodu sa metóda potrebuje "vymotať" z údolia.
 \end{figure}
 
 
+
 \newpage
 \noindent \textbf{Počiatočný bod} $x^{[0]} = [1.5; 0.5]$ \\
-V tomto prípade je funkcia strmšia (vplyvom exponenciály), čo môže ovplyvniť veľkosť kroku v prvej iterácii.
 
 \begin{table}[H]
     \centering
@@ -969,6 +1034,9 @@ V tomto prípade je funkcia strmšia (vplyvom exponenciály), čo môže ovplyvn
     \end{tabular}
     \caption{Priebeh MSG pre $x^{[0]} = [1.5;\;0.5]$.}
 \end{table}
+
+Pri tomto počiatočnom bode sa výrazne prejavila nevýhoda absencie reštartov, keďže počet iterácií vzrástol až na 25. Ide o viac než dvojnásobok v porovnaní s verziou s resetovaním, ktorá dosiahla konvergenciu už po 11 krokoch. Bez vynulovania parametra $\beta$ sa smery vyhľadávania stávajú menej efektívnymi, čo vedie k spomaleniu konvergencie v záverečnej fáze v okolí minima, čo je zároveň viditeľné aj na zvýšenej hustote bodov na grafe.
+
 
 \begin{figure}[H]
     \centering
@@ -991,29 +1059,30 @@ V tomto prípade je funkcia strmšia (vplyvom exponenciály), čo môže ovplyvn
 \end{figure}
 
 
-\subsection{Porovnanie metód}
+\newpage
 
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{Poč. bod} $x^{[0]}$ & \textbf{Iter (Reset)} & \textbf{Iter (Bez)} & \textbf{Minimum} $\tilde{x}$ & \textbf{Hodnota} & \textbf{Rozdiel} \\ \hline
+$[0.0; 0.0]$     & 15 & 20 & $[0.3880; -0.7409]$ & $1,568996$ & $0,001887$ \\ \hline
+$[1.5; 0.5]$     & 11 & 25 & $[0.3882; -0.7410]$ & $1,568996$ & $0,001725$ \\ \hline
+$[2.0; -2.0]$    & 13 & 22 & $[0.3885; -0.7405]$ & $1,568998$ & $0,001540$ \\ \hline
+$[-1.0; -1.0]$   & 12 & 19 & $[0.3879; -0.7412]$ & $1,568999$ & $0,001220$ \\ \hline
+$[-1.0; 1.0]$    & 14 & 26 & $[0.3883; -0.7408]$ & $1,568997$ & $0,001650$ \\ \hline
+$[2.0; 2.0]$     & 16 & 35 & $[0.3878; -0.7415]$ & $1,569002$ & $0,001910$ \\ \hline
+$[-2.0; -2.0]$   & 14 & 21 & $[0.3884; -0.7406]$ & $1,568998$ & $0,001480$ \\ \hline
+$[0.5; -1.0]$    & 7  & 9  & $[0.3881; -0.7409]$ & $1,568996$ & $0,000950$ \\ \hline
+$[3.0; 0.0]$     & 15 & 28 & $[0.3886; -0.7404]$ & $1,569005$ & $0,001820$ \\ \hline
+$[0.0; 2.0]$     & 18 & 31 & $[0.3875; -0.7418]$ & $1,569010$ & $0,001950$ \\ \hline
+\end{tabular}
+\caption{Porovnanie konvergencie MSG}
+\end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Vo všetkých testovaných prípadoch dosiahla verzia s resetom výsledok rýchlejšie. Najvýraznejší rozdiel vidíme pri bode $[2.0; 2.0]$ (16 vs. 35 iterácií) a $[1.5; 0.5]$ (11 vs. 25 iterácií). Bez resetu má metóda tendenciu generovať smery, ktoré po mnohých krokoch strácajú vlastnosť združenosti (kvôli nekvadratickej povahe funkcie), čo spomaľuje postup k minimu.
 
-%ZOZNAM LITERATÚRY ---
-%\newpage
-%\addcontentsline{toc}{section}{Zoznam použitej literatúry} % Pridá sekciu do obsahu, hoci nemá číslo
-
-%\begin{thebibliography}{9} % {9} znamená zarovnanie pre max jednociferný počet zdrojov
-
-    % 1. Vaše skriptá (Zdroj z PDF)
-%    \bibitem{zemanek}
-%    ZEMÁNEK, Petr. \textit{M5170: Matematické programování -- Kapitola 3: Numerické metody řešení úloh matematického programování I}. [učebný text]. Brno: Masarykova univerzita, Přírodovědecká fakulta, 2024.
-
-    % 2. Štandardná učebnica na MU (odporúčam tam nechať, vyzerá to dobre)
-%    \bibitem{horova}
-%    HOROVÁ, Ivana a Jiří ZELINKA. \textit{Numerické metody}. 2. rozšířené vydání. Brno: Masarykova univerzita, 2008. ISBN 978-80-210-4644-8.
-
-    % 3. Softvér, ktorý ste použili (voliteľné, ale vhodné)
- %   \bibitem{matlab}
-%    MATHWORKS. \textit{MATLAB Documentation}. [online]. Dostupné z: \url{https://www.mathworks.com/help/matlab/}.
-
-%\end{thebibliography}
+Zatiaľ čo Newtonova metóda potrebovala na nájdenie minima len cca 3 až 6 krokov, MSG s resetom potrebuje priemerne 11 až 18 krokov. To potvrdzuje teóriu, že MSG (metóda prvého rádu) je pomalšia než Newtonova metóda (metóda druhého rádu), avšak jej výhodou je, že nevyžaduje výpočet a inverziu Hessovej matice.
 
 \end{document}
